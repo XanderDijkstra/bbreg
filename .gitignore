@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.*.local
+.vercel/
+.DS_Store
+*.log
+server/dist/
+client/dist/
+.cache/
+.turbo/
+coverage/
