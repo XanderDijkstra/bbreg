@@ -167,7 +167,6 @@ export async function fetchCompaniesForDate(
   opts: { withRoller?: boolean } = {},
 ): Promise<EnrichedCompany[]> {
   const start = Date.now();
-  const limiter = pLimit(DETAIL_CONCURRENCY);
 
   const collected: BrregCompany[] = [];
   let page = 0;
@@ -181,20 +180,23 @@ export async function fetchCompaniesForDate(
     if (page > 30) break; // safety guard
   }
 
-  // Fetch detail for each org concurrently to make sure we get phone/email/etc.
-  const enriched = await Promise.all(
-    collected.map((c) =>
-      limiter(async () => {
-        const detail = (await fetchDetail(c.organisasjonsnummer)) ?? c;
-        const shaped = shapeCompany(detail);
-        if (opts.withRoller) {
-          const roller = await fetchRoller(c.organisasjonsnummer);
+  // The list endpoint already contains every field the detail endpoint returns
+  // for newly registered companies (organisasjonsform, naeringskode1,
+  // forretningsadresse, MVA flag, sektorkode). Phone/email/roller are pulled
+  // on demand when the user clicks "Lagre som lead" (via /api/companies/enrich).
+  const enriched = collected.map(shapeCompany);
+
+  if (opts.withRoller) {
+    const limiter = pLimit(DETAIL_CONCURRENCY);
+    await Promise.all(
+      enriched.map((shaped) =>
+        limiter(async () => {
+          const roller = await fetchRoller(shaped.organisasjonsnummer);
           Object.assign(shaped, roller);
-        }
-        return shaped;
-      }),
-    ),
-  );
+        }),
+      ),
+    );
+  }
 
   logger.info(
     { date, count: enriched.length, durationMs: Date.now() - start },
