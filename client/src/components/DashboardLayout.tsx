@@ -1,12 +1,11 @@
 import { useState, type ReactNode } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import {
   Activity,
   BarChart3,
   Building2,
   Filter,
   KanbanSquare,
-  LogOut,
   Mail,
   Menu,
   Megaphone,
@@ -16,9 +15,6 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { useMe, useSignOut } from '@/hooks/useAuth';
-import { toast } from 'sonner';
 
 const NAV = [
   { to: '/', label: 'Oppdagelse', icon: Building2 },
@@ -34,15 +30,6 @@ const NAV = [
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const me = useMe();
-  const signOut = useSignOut();
-  const navigate = useNavigate();
-
-  const onSignOut = async () => {
-    await signOut.mutateAsync();
-    toast.success('Logget ut');
-    navigate('/auth');
-  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -82,17 +69,6 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
             </NavLink>
           ))}
         </nav>
-        <div className="absolute inset-x-0 bottom-0 border-t p-3">
-          <div className="mb-2 truncate px-3 text-xs text-muted-foreground">{me.data?.email}</div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start"
-            onClick={onSignOut}
-          >
-            <LogOut className="mr-2 h-4 w-4" /> Logg ut
-          </Button>
-        </div>
       </aside>
 
       <div className="flex flex-1 flex-col">

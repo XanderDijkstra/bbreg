@@ -1,7 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useMe } from '@/hooks/useAuth';
 import { DashboardLayout } from '@/components/DashboardLayout';
-import { AuthPage } from '@/pages/Auth';
 import { DiscoveryPage } from '@/pages/Discovery';
 import { AutomationPage } from '@/pages/Automation';
 import { AnalyticsPage } from '@/pages/Analytics';
@@ -13,25 +11,6 @@ import { CrmPage } from '@/pages/Crm';
 import { WikiPage } from '@/pages/Wiki';
 
 export default function App() {
-  const me = useMe();
-
-  if (me.isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-      </div>
-    );
-  }
-
-  if (!me.data) {
-    return (
-      <Routes>
-        <Route path="/auth" element={<AuthPage />} />
-        <Route path="*" element={<Navigate to="/auth" replace />} />
-      </Routes>
-    );
-  }
-
   return (
     <DashboardLayout>
       <Routes>
