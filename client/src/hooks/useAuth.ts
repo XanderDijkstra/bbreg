@@ -10,10 +10,15 @@ export function useMe() {
   return useQuery({
     queryKey: ['me'],
     queryFn: async () => {
-      const data = await api.get<{ user: MeUser | null }>('/auth/me');
-      return data.user;
+      try {
+        const data = await api.get<{ user: MeUser | null }>('/auth/me');
+        return data.user;
+      } catch {
+        return null;
+      }
     },
     staleTime: 60_000,
+    retry: false,
   });
 }
 

@@ -19,7 +19,19 @@ async function request<T>(
     },
   });
   const text = await res.text();
-  const json = text ? (JSON.parse(text) as unknown) : null;
+  let json: unknown = null;
+  if (text) {
+    try {
+      json = JSON.parse(text) as unknown;
+    } catch {
+      const err: ApiError = {
+        status: res.status,
+        code: 'INVALID_JSON',
+        message: `Forventet JSON, fikk ${res.headers.get('content-type') ?? 'ukjent type'}.`,
+      };
+      throw err;
+    }
+  }
   if (!res.ok) {
     const e = json as { error?: { code?: string; message?: string } } | null;
     const err: ApiError = {
