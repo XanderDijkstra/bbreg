@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Building2, Mail, Phone, Search, Sparkles } from 'lucide-react';
+import { Building2, FileText, Mail, Phone, Search, Sparkles } from 'lucide-react';
+import { ProposalDialog } from '@/components/ProposalDialog';
 import { api } from '@/lib/api';
 import { yesterdayOslo } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -67,6 +68,7 @@ export function DiscoveryPage() {
     poststed: '',
   });
   const [selected, setSelected] = useState<EnrichedCompany | null>(null);
+  const [proposalCompany, setProposalCompany] = useState<EnrichedCompany | null>(null);
 
   const fetcher = useMutation({
     mutationFn: () => api.post<FetchResp>('/companies/fetch', { date }),
@@ -349,7 +351,16 @@ export function DiscoveryPage() {
         onClose={() => setSelected(null)}
         onSave={(c) => enrichSave.mutate(c)}
         saving={enrichSave.isPending}
+        onProposal={(c) => setProposalCompany(c)}
       />
+      {proposalCompany && (
+        <ProposalDialog
+          open
+          onClose={() => setProposalCompany(null)}
+          defaultClientName={proposalCompany.navn}
+          defaultContact={proposalCompany.dagligLederNavn ?? undefined}
+        />
+      )}
     </div>
   );
 }
@@ -381,11 +392,13 @@ function CompanyDetailDialog({
   onClose,
   onSave,
   saving,
+  onProposal,
 }: {
   company: EnrichedCompany | null;
   onClose: () => void;
   onSave: (c: EnrichedCompany) => void;
   saving: boolean;
+  onProposal: (c: EnrichedCompany) => void;
 }) {
   if (!company) return null;
   return (
@@ -409,9 +422,13 @@ function CompanyDetailDialog({
         <Row label="Domene" value={company.domain ?? '–'} />
         <Row label="MVA-registrert" value={company.registrertIMva ? 'Ja' : 'Nei'} />
       </div>
-      <div className="mt-6 flex justify-end gap-2">
+      <div className="mt-6 flex flex-wrap justify-end gap-2">
         <Button variant="outline" onClick={onClose}>
           Lukk
+        </Button>
+        <Button variant="secondary" onClick={() => onProposal(company)}>
+          <FileText className="mr-2 h-4 w-4" />
+          Generer tilbud
         </Button>
         <Button onClick={() => onSave(company)} disabled={saving}>
           {saving ? 'Lagrer …' : 'Lagre som lead'}

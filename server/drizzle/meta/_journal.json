@@ -8,6 +8,13 @@
       "when": 1777500330954,
       "tag": "0000_fluffy_wonder_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778576362008,
+      "tag": "0001_curvy_hitman",
+      "breakpoints": true
     }
   ]
 }

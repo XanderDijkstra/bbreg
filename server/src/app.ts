@@ -12,6 +12,7 @@ import { emailRoute, resendWebhookRoute } from './routes/email.js';
 import { industriesRoute } from './routes/industries.js';
 import { analytics } from './routes/analytics.js';
 import { cron } from './routes/cron.js';
+import { proposalsRoute } from './routes/proposals.js';
 import { logger } from './lib/logger.js';
 
 export function createApp() {
@@ -51,6 +52,7 @@ export function createApp() {
   api.route('/email', emailRoute);
   api.route('/industries', industriesRoute);
   api.route('/analytics', analytics);
+  api.route('/proposals', proposalsRoute);
   app.route('/api', api);
 
   app.onError((err, c) => {

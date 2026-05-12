@@ -8,6 +8,7 @@ import { OffersPage } from '@/pages/Offers';
 import { EmailOutreachPage } from '@/pages/EmailOutreach';
 import { OutreachStatsPage } from '@/pages/OutreachStats';
 import { CrmPage } from '@/pages/Crm';
+import { ProposalsPage } from '@/pages/Proposals';
 import { WikiPage } from '@/pages/Wiki';
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/email-outreach" element={<EmailOutreachPage />} />
         <Route path="/outreach-stats" element={<OutreachStatsPage />} />
         <Route path="/crm" element={<CrmPage />} />
+        <Route path="/tilbud" element={<ProposalsPage />} />
         <Route path="/wiki" element={<WikiPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

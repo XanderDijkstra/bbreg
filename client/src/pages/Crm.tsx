@@ -1,10 +1,13 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { FileText } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { ProposalDialog } from '@/components/ProposalDialog';
 
 interface Lead {
   id: string;
@@ -31,6 +34,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 export function CrmPage() {
   const qc = useQueryClient();
+  const [proposalLead, setProposalLead] = useState<Lead | null>(null);
   const list = useQuery({
     queryKey: ['leads', 'all'],
     queryFn: () => api.get<{ leads: Lead[] }>('/leads?pageSize=200'),
@@ -94,6 +98,15 @@ export function CrmPage() {
                         </option>
                       ))}
                     </Select>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 h-7 w-full text-xs"
+                      onClick={() => setProposalLead(l)}
+                    >
+                      <FileText className="mr-1 h-3 w-3" />
+                      Generer tilbud
+                    </Button>
                   </div>
                 ))}
                 {!items.length && (
@@ -104,6 +117,14 @@ export function CrmPage() {
           );
         })}
       </div>
+      {proposalLead && (
+        <ProposalDialog
+          open
+          onClose={() => setProposalLead(null)}
+          leadId={proposalLead.id}
+          defaultClientName={proposalLead.navn}
+        />
+      )}
     </div>
   );
 }
