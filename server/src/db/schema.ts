@@ -157,6 +157,27 @@ export const webhookDeliveries = pgTable(
   }),
 );
 
+export const proposals = pgTable(
+  'proposals',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    leadId: uuid('lead_id').references(() => leads.id, { onDelete: 'set null' }),
+    clientName: text('client_name').notNull(),
+    serviceType: text('service_type').notNull(),
+    proposalTitle: text('proposal_title').notNull(),
+    monthlyPriceNok: integer('monthly_price_nok'),
+    data: jsonb('data').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    userCreatedIdx: index('proposals_user_created_idx').on(t.userId, t.createdAt),
+  }),
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Lead = typeof leads.$inferSelect;
@@ -166,3 +187,5 @@ export type Offer = typeof offers.$inferSelect;
 export type EmailLog = typeof emailLogs.$inferSelect;
 export type WebhookDelivery = typeof webhookDeliveries.$inferSelect;
 export type ExcludedIndustry = typeof excludedIndustries.$inferSelect;
+export type Proposal = typeof proposals.$inferSelect;
+export type NewProposal = typeof proposals.$inferInsert;
